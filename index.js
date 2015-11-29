@@ -15,9 +15,9 @@ function Penumbra(){
     setTimeout(function(){
         if(self.runCount > 0) return;
         if(hasProcessArg){
-
-        }
             self.exec(process.argv[2]);
+        }
+
         /*else {
             self.execDefault();
         }*/
