@@ -1,6 +1,6 @@
 var pen = require('penumbra')();
 
-pen.task('greeting', function(){
+pen.task('greeting', function * (){
     console.log('Hello world!');
 });
 
