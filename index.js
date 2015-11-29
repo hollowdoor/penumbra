@@ -2,6 +2,12 @@ var TaskManager = require('./lib/taskmanager'),
     cc = require('create-coroutine'),
     hasProcessArg =
     (process && Object.prototype.toString.call(process.argv) === '[object Array]' && process.argv[2]);
+
+/*
+git remote add origin https://github.com/hollowdoor/penumbra.git
+git push -u origin master
+*/
+
 function Penumbra(){
     TaskManager.call(this);
     var self = this;
