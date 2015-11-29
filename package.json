@@ -28,5 +28,6 @@
     "repository": {
       "type": "git",
       "url": "https://github.com/hollowdoor/penumbra.git"
-    }
+  },
+  "tonicExample":"example.js"
 }
