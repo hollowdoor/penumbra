@@ -1,0 +1,28 @@
+{
+  "name": "penumbra",
+  "version": "1.0.0",
+  "description": "Run tasks",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tasks"
+  ],
+  "author": "Quentin Engles <hollowdoor99@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "create-coroutine": "^1.0.1",
+    "multimatcher": "^1.0.1"
+  },
+  "jshintConfig": {
+    "esnext": true
+  },
+  "devDependencies": {
+    "map-stream": "0.0.6",
+    "vinyl-fs": "^2.2.1"
+  }
+}
