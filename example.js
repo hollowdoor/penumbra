@@ -1,7 +1,7 @@
 var pen = require('penumbra')();
 
 pen.task('greeting', function(){
-    alert('Hello world!');
+    console.log('Hello world!');
 });
 
 pen.exec('greeting');
