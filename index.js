@@ -30,9 +30,9 @@ Penumbra.prototype.exec = function(){
     if(!arguments.length){
         if(hasProcessArg){
             return execute.call(this, process.argv[2]);
-        }else if(window){
+        }else if(typeof window !== 'undefined'){
             var pathArray = window.location.pathname.split( '/' );
-            if(pathArray.length && pathArray[0].length){
+            if(pathArray.length > 0 && pathArray[0].length){
                 return execute.call(this, pathArray[0]);
             }
         }
@@ -47,11 +47,11 @@ function PenumbraFactory(){
 
 PenumbraFactory.runDefault = function(fn){
     if(!fn) return;
-    if(hasProcessArg){
+    if(!hasProcessArg){
         return cc.run(fn);
-    }else if(window){
+    }else if(typeof window !== 'undefined'){
         var pathArray = window.location.pathname.split( '/' );
-        if(pathArray.length && pathArray[0].length){
+        if(!pathArray.length){
             return cc.run(fn);
         }
     }
