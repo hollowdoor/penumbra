@@ -98,6 +98,33 @@ pen.task('vinyl', function * (){
 });
 ```
 
+Multiple browserify build recipe
+--------------------------------
+
+Using [file-loop](https://www.npmjs.com/package/file-loop), and assuming the existence of a *dist* directory:
+
+```javascript
+var pen = require('penumbra')(),
+    finder = require('file-loop'),
+    path = require('path'),
+    browserify = require('browserify'),
+    fs = require('fs');
+
+pen.task('build', function * (){
+    var find = yield finder(['*.js']), file;
+
+    while(file = yield find()){
+        console.log('building from '+file.name);
+        yield [
+            browserify(file.name).bundle(),
+            fs.createWriteStream(path.join('dist', file.name))
+        ];
+    }
+});
+```
+
+Save the script as **build.js** then run it as `node ./build.js build`. This will also browserify **build.js** so to avoid that you might want to write build.js seperately, and npm [link](https://docs.npmjs.com/cli/link) it globally. If you do then don't forget to add `#!/usr/bin/env node` to the beginning of your **build.js** script.
+
 Methods
 -------
 
