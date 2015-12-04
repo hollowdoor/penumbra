@@ -111,7 +111,7 @@ var pen = require('penumbra')(),
     fs = require('fs');
 
 pen.task('build', function * (){
-    var find = yield finder(['*.js']), file;
+    var find = yield finder(['*.js'], {ignore: 'build.js'}), file;
 
     while(file = yield find()){
         console.log('building from '+file.name);
@@ -123,9 +123,7 @@ pen.task('build', function * (){
 });
 ```
 
-Save the script as **build.js** then run it as `node ./build.js build`. This will also browserify **build.js** so to avoid that you might want to write build.js seperately, and npm [link](https://docs.npmjs.com/cli/link) it globally.
-
-You can also just install globally using `npm install -g` if you create a special module out of `build.js` which would probably be good for management of dependencies. If you do that then don't forget to add `#!/usr/bin/env node` to the beginning of your **build.js** script.
+Save the script as **build.js** then run it as `node ./build.js build`.
 
 Methods
 -------
