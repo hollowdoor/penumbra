@@ -123,6 +123,29 @@ pen.task('build', function * (){
 });
 ```
 
+Handle errors
+-------------
+
+Just use a try/catch.
+
+```javascript
+pen.task('build', function * (){
+    var find = yield finder(['*.js'], {ignore: 'build.js'}), file;
+    try{
+        while(file = yield find()){
+            console.log('building from '+file.name);
+            yield [
+                browserify(file.name).bundle(),
+                fs.createWriteStream(path.join('dist', file.name))
+            ];
+        }
+    }catch(e){
+        console.log(e);
+    }
+
+});
+```
+
 Save the script as **build.js** then run it as `node ./build.js build`.
 
 Methods
