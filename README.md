@@ -18,6 +18,11 @@ Build a script then run it with: `node myscript.js taskname`
 
 And don't forget the first line in your script should be `#!/usr/bin/env node` so your script will work in a Unix environment. Also use `process.cwd()` to get the current working directory any where you run a global script. Easy as pie.
 
+Documentation
+-------------
+
+Visit the [penumbra wiki](https://github.com/hollowdoor/penumbra/wiki/Documentation) for more documentation.
+
 Basic Usage
 -----------
 
@@ -49,104 +54,6 @@ pen.exec('log').then(function(){
 ```
 
 If you run `exec` yourself then the auto execution won't go. Please go to the [Mozilla dev promise docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to learn more about Promises, or if you need a refresher on them.
-
-### Run a nested task
-
-```javascript
-var pen = require('penumbra')();
-var fs = require('fs');
-pen.task('nested', function * (){
-    //If process.argv[3] = 'nested' then something happens here.
-    console.log('Okay then?');
-    let stuff = yield new Promise(function(resolve, reject){
-        fs.readFile('somefile', 'utf8', function(err, str){
-            resolve(str);
-        });
-    });
-
-    console.log('Why are you reading my '+stuff+'?');
-});
-pen.task('log', ['ready'], function * (){
-    console.log('log log log every one wants a log!');
-    pen.exec(process.argv[3]);
-});
-```
-
-Use vinyl-fs to take over the world
------------------------------------
-
-```javascript
-var pen = require('penumbra')();
-var map = require('map-stream');
-var fs = require('vinyl-fs');
-
-var log = function(file, cb) {
-  console.log(file.path);
-  cb(null, file);
-};
-//The original example from the vinyl-fs docs.
-//fs.src(['./js/**/*.js', '!./js/vendor/*.js'])
-//  .pipe(map(log))
-//  .pipe(fs.dest('./output'));
-
-pen.task('vinyl', function * (){
-    yield [
-        fs.src(['./js/**/*.js', '!./js/vendor/*.js']),
-        map(log),
-        fs.dest('./output')
-    ];
-});
-```
-
-Multiple browserify build recipe
---------------------------------
-
-Using [file-loop](https://www.npmjs.com/package/file-loop), and assuming the existence of a *dist* directory:
-
-```javascript
-var pen = require('penumbra')(),
-    finder = require('file-loop'),
-    path = require('path'),
-    browserify = require('browserify'),
-    fs = require('fs');
-
-pen.task('build', function * (){
-    var find = yield finder(['*.js'], {ignore: 'build.js'}), file;
-
-    while(file = yield find()){
-        console.log('building from '+file.name);
-        yield [
-            browserify(file.name).bundle(),
-            fs.createWriteStream(path.join('dist', file.name))
-        ];
-    }
-});
-```
-
-Handle errors
--------------
-
-Just use a try/catch.
-
-```javascript
-pen.task('build', function * (){
-    var find = yield finder(['*.js'], {ignore: 'build.js'}), file;
-    try{
-        while(file = yield find()){
-            console.log('building from '+file.name);
-            yield [
-                browserify(file.name).bundle(),
-                fs.createWriteStream(path.join('dist', file.name))
-            ];
-        }
-    }catch(e){
-        console.log(e);
-    }
-
-});
-```
-
-Save the script as **build.js** then run it as `node ./build.js build`.
 
 Methods
 -------
