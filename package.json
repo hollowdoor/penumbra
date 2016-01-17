@@ -1,6 +1,6 @@
 {
   "name": "penumbra",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "description": "Run tasks",
   "main": "index.js",
   "directories": {
