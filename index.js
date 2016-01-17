@@ -25,18 +25,26 @@ function Penumbra(options){
 Penumbra.prototype = Object.create(TaskManager.prototype);
 var execute = TaskManager.prototype.exec;
 Penumbra.prototype.exec = function(){
-    if(!arguments.length){
-        if(hasProcessArg){
-            return execute.call(this, process.argv[2]);
-        }else if(typeof window !== 'undefined'){
-            var pathArray = window.location.pathname.split( '/' );
-            if(pathArray.length > 0 && pathArray[0].length){
-                return execute.call(this, pathArray[0]);
+    if(arguments.length){
+        for(var i=0; i<arguments.length; i++){
+            if(typeof arguments[i] !== 'string'){
+                throw new Error('Arguments to .exec must be strings.');
             }
+        }
+
+        return execute.apply(this, arguments);
+    }
+
+    if(hasProcessArg){
+        return execute.call(this, process.argv[2]);
+    }else if(typeof window !== 'undefined'){
+        var pathArray = window.location.pathname.split( '/' );
+        if(pathArray.length > 0 && pathArray[0].length){
+            return execute.call(this, pathArray[0]);
         }
     }
 
-    return execute.apply(this, arguments);
+
 };
 
 function PenumbraFactory(options){
