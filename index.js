@@ -1,5 +1,6 @@
 var TaskManager = require('./lib/taskmanager'),
     cc = require('create-coroutine'),
+    execute = TaskManager.prototype.exec,
     hasProcessArg =
     (process && Object.prototype.toString.call(process.argv) === '[object Array]' && process.argv[2]);
 
@@ -13,18 +14,20 @@ function Penumbra(options){
     TaskManager.call(this);
     var self = this;
     this.execError = null;
+    
     setTimeout(function(){
         if(self.runCount > 0 || self.execError) return;
-        if(hasProcessArg){
-            self.exec(process.argv[2]);
-        }else if(typeof options.default !== 'undefined'){
+        var args = getArgs();
+        if(args.length){
+            self.exec.apply(self, args);
+        }else if(options.default){
             self.exec(options.default);
         }
     }, 11);
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
-var execute = TaskManager.prototype.exec;
+
 Penumbra.prototype.exec = function(){
     var self = this;
     if(arguments.length){
@@ -39,14 +42,7 @@ Penumbra.prototype.exec = function(){
         return execute.apply(this, arguments);
     }
 
-    if(hasProcessArg){
-        return execute.call(this, process.argv[2]);
-    }else if(typeof window !== 'undefined'){
-        var pathArray = window.location.pathname.split( '/' );
-        if(pathArray.length > 0 && pathArray[0].length){
-            return execute.call(this, pathArray[0]);
-        }
-    }
+    return Promise.resolve(null);
 };
 
 function PenumbraFactory(options){
@@ -66,3 +62,22 @@ PenumbraFactory.runDefault = function(fn){
 };
 
 module.exports = PenumbraFactory;
+
+function getArgs(){
+    var arg = (typeof process === 'object' &&
+                Object.prototype.toString.call(process.argv) === '[object Array]' &&
+                process.argv[2]);
+
+    if(arg){
+        return [arg];
+    }
+
+    if(typeof window !== 'undefined'){
+        var pathArray = window.location.pathname.split( '/' );
+        if(pathArray.length > 0 && pathArray[0].length){
+            return [pathArray[0]];
+        }
+    }
+
+    return [];
+}
