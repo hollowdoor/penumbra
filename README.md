@@ -18,10 +18,75 @@ Build a script then run it with: `node myscript.js taskname`
 
 And don't forget the first line in your script should be `#!/usr/bin/env node` so your script will work in a Unix environment. Also use `process.cwd()` to get the current working directory any where you run a global script. Easy as pie.
 
+Version 2 differences
+---------------------
+
+Penumbra tasks can now return a value available to dependent tasks as arguments.
+
+`pen.exec` without arguments does nothing.
+
+Auto running is more consistent.
+
+The `runDefault` static method is deprecated.
+
+There is now an options arguments for the `penumbra` constructor factory function with a default option.
+
 Documentation
 -------------
 
 Visit the [penumbra wiki](https://github.com/hollowdoor/penumbra/wiki/Documentation) for more documentation.
+
+Dependency Results
+------------------
+
+`penumbra` version 2 allows you to return a value from a task callback.
+
+Return values are available to tasks that have those other tasks as dependencies.
+
+```javascript
+var penumbra = require('penumbra')();
+
+pen.task('ready', function * (){
+    console.log('ready to log!');
+    return 'Turn it up to ';
+});
+pen.task('super_ready', function * (){
+    return process.argv[3] || 11;
+});
+pen.task('log', ['ready', 'super_ready'], function * (ready, sup){
+    console.log('ok logging!');
+    //ready="Turn it up to "
+    //sup=process.argv[3], or 11
+    console.log(ready + sup + '!');
+});
+```
+
+Saving the script above as `log.js`, and running is as `node log log` prints:
+
+```
+ready to log!
+ok logging!
+Turn it up to 11!
+```
+
+Default Task
+------------
+
+Setting a default task gives you max control.
+
+```javascript
+var pen = require('penumbra')({
+        default: 'def'
+    });
+```
+
+...
+
+```javascript
+pen.task('def', function * (){
+    console.log('Running the default task.');
+});
+```
 
 Basic Usage
 -----------
@@ -60,18 +125,37 @@ Methods
 
 ### pen.task(name, [dependencies, ...], generator function callback)
 
-Set a task. Dependencies are run first.
+Set a task. Dependencies are run first. The task name, and dependencies should be:
+
+-	JavaScript string
+-	Glob string
+-	Regular expression
+
+Look at [create-coroutine](https://www.npmjs.com/package/create-coroutine) to learn more about what is running the task callbacks in `penumbra`.
 
 ### pen.exec(name, ..., name) -> Promise instance
 
-Execute a bunch of tasks. Use this function if you want to run a bunch of tasks, or for some reason you want a task runner as a webpage (maybe for remote tasks?). :)
+Call `pen.exec` if you want to run a bunch of tasks manually.
 
-If you use `pen.exec` without arguments it looks for a process object with argv[2] to execute, or the first value of the path in a url if you have `penumbra` in a webpage.
+If you have any tasks set, and they match the strings you pass to `pen.exec` those tasks will be executed.
+
+If you don't call `pen.exec`:
+
+1.	the penumbra instance will look in `process.argv[2]` for a task when in node or,
+2.	in the first of `window.location.pathname` if you're using penumbra in a browser.
+
+Version 1: ~~If you use `pen.exec` without arguments it looks for a process object with argv[2] to execute, or the first value of the path in a url if you have `penumbra` in a webpage.~~
+
+Version 2: `pen.exec` ran without arguments doesn't do anything.
+
+All arguments to `pen.exec` must be strings.
 
 Static Methods
 --------------
 
 ### require('penumbra').runDefault(generator function)
+
+**deprecated**: The static method runDefault will be removed in a later version.
 
 Run a function when there are is no task named in the command line arguments.
 
@@ -90,8 +174,6 @@ In many situations you'll want to use npm scripts in package.json. If you want s
 
 About
 -----
-
-Look at [create-coroutine](https://www.npmjs.com/package/create-coroutine) to learn more about what is running the task callbacks in `penumbra`.
 
 `penumbra` is task agnostic. Use it as a build tool, auto updater, a command line template, or a full program for doing whatever. There's no writing/reading/watch functions, arguments parsing, or anything helpful so get those elsewhere.
 

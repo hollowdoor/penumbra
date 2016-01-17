@@ -14,7 +14,7 @@ function Penumbra(options){
     TaskManager.call(this);
     var self = this;
     this.execError = null;
-    
+
     setTimeout(function(){
         if(self.runCount > 0 || self.execError) return;
         var args = getArgs();
@@ -50,6 +50,7 @@ function PenumbraFactory(options){
 }
 
 PenumbraFactory.runDefault = function(fn){
+    //deprecate this static method.
     if(!fn) return;
     if(!hasProcessArg){
         return cc.run(fn);
