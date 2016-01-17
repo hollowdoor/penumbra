@@ -8,20 +8,18 @@ git remote add origin https://github.com/hollowdoor/penumbra.git
 git push -u origin master
 */
 
-function Penumbra(){
+function Penumbra(options){
+    options = options || {};
     TaskManager.call(this);
     var self = this;
-
     setTimeout(function(){
         if(self.runCount > 0) return;
         if(hasProcessArg){
             self.exec(process.argv[2]);
+        }else if(typeof options.default !== 'undefined'){
+            self.exec(options.default);
         }
-
-        /*else {
-            self.execDefault();
-        }*/
-    });
+    }, 11);
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
@@ -41,8 +39,8 @@ Penumbra.prototype.exec = function(){
     return execute.apply(this, arguments);
 };
 
-function PenumbraFactory(){
-    return new Penumbra();
+function PenumbraFactory(options){
+    return new Penumbra(options);
 }
 
 PenumbraFactory.runDefault = function(fn){
