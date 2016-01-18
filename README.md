@@ -23,7 +23,7 @@ Version 2 differences
 
 Penumbra tasks can now return a value available to dependent tasks as arguments.
 
-`pen.exec` without arguments does nothing.
+`pen.exec` without arguments does nothing. The returned promise resolves to `null`.
 
 Auto running is more consistent.
 
@@ -61,7 +61,7 @@ pen.task('log', ['ready', 'super_ready'], function * (ready, sup){
 });
 ```
 
-Saving the script above as `log.js`, and running is as `node log log` prints:
+Saving the script above as `cmdlog.js`. Running it as `node cmdlog log` prints:
 
 ```
 ready to log!
