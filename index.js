@@ -11,7 +11,6 @@ function Penumbra(options){
     options = options || {};
     TaskManager.call(this);
     var self = this;
-    this.execError = null;
 
     setTimeout(function(){
         if(self.runCount > 0 || self.execError) return;
@@ -25,23 +24,6 @@ function Penumbra(options){
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
-
-Penumbra.prototype.exec = function(){
-    var self = this;
-    if(arguments.length){
-        for(var i=0; i<arguments.length; i++){
-            if(typeof arguments[i] !== 'string'){
-                return new Promise(function(){
-                    throw (self.execError = new Error('Arguments to .exec must be strings.'));
-                });
-            }
-        }
-
-        return execute.apply(this, arguments);
-    }
-
-    return Promise.resolve(null);
-};
 
 function PenumbraFactory(options){
     return new Penumbra(options);
