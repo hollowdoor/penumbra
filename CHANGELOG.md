@@ -8,6 +8,7 @@ Only major, or breaking changes will be logged here.
 
 -	Penumbra tasks can now return a value available to dependent tasks as arguments.
 -	`pen.exec` without arguments does nothing. The returned promise resolves to `null`.
+-	`pen.exec` called like `pen.exec.call` will work with whatever this context is used.
 -	Auto running is more consistent.
 -	The `runDefault` static method is deprecated.
 -	There is now an options arguments for the `penumbra` constructor factory function with a default option.
