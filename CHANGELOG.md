@@ -3,6 +3,11 @@ penumbra changelog
 
 Only major, or breaking changes will be logged here.
 
+2.1.1
+-----
+
+-	Added a `tasks` property which returns a formatted string of tasks.
+
 2.0.0
 -----
 
