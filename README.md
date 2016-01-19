@@ -150,6 +150,17 @@ Version 2: `pen.exec` ran without arguments doesn't do anything.
 
 All arguments to `pen.exec` must be strings.
 
+Properties
+----------
+
+### pen.tasks
+
+Get a nicely formatted string representing all the tasks.
+
+```javascript
+console.log(pen.tasks);
+```
+
 Static Methods
 --------------
 
