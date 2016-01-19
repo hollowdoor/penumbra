@@ -166,13 +166,38 @@ Static Methods
 
 ### require('penumbra').runDefault(generator function)
 
-**deprecated**: The static method runDefault will be removed in a later version.
+Interesting Effects To Pay Attention To
+---------------------------------------
 
-Run a function when there are is no task named in the command line arguments.
+### Regular Expression Tasks
 
-If you are specifying your own tasks with the `exec` method you shouldn't need to use `runDefault`. In that instance you may want to use your own checks using a command line parser like [yargs](https://www.npmjs.com/package/yargs), or just check for `process.argv[2]`.
+There is a chance that a regular expression task will run twice, or more if you have it as a dependency.
 
-Or perhaps you would like to run `exec` from `runDefault`. Whatever works!
+This happens because `pen.exec` uses a pattern matching algorithm instead of just checking equality.
+
+The regex task can run on it's own when matched then have a chance to run again as a dependent.
+
+In the next example the `/b/` task will run twice because it matches the **b** in **build**.
+
+```javascript
+pen.task('/b/', function * (){ console.log('omg') });
+pen.task('build', [/b/], function * (){ console.log('OMG!') });
+pen.exec('build');
+```
+
+### Globs
+
+As with regular expressions glob string tasks also have a chance of running twice. There is less of a chance, but it can still happen.
+
+The effects of globs, and regular expressions can be used to leverage dependencies if you're careful about how you write them. With great power comes destructive capabilities. ;)
+
+### Auto Running
+
+If you run your `penumbra` script without calling `pen.exec` a task will be chosen from the command line arguments. To do this there is a timer inside the `penumbra` constructor that will delay the internal call to `pen.exec` until all tasks are set.
+
+If you call `pen.exec` inside another asynchronous function the delay of that timer will not be long enough, and you'll get a chance for `pen.exec` to be called twice. This can happen if both the command line input task, and the input to your `pen.exec` method call share the same name pattern.
+
+In fact you could have infinite recursion from `pen.exec` calls inside of a task callback. Just be aware of where your calling `pen.exec`.
 
 The Alteratives
 ---------------
