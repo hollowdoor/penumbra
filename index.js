@@ -20,6 +20,7 @@ function Penumbra(options){
         }else if(options.default){
             self.exec(options.default);
         }
+
     }, 11);
 }
 
