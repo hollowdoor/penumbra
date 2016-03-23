@@ -11,18 +11,6 @@ function Penumbra(options){
     options = options || {};
     TaskManager.call(this);
     autoRun(this);
-    /*var self = this;
-
-    setTimeout(function(){
-        if(self.runCount > 0 || self.execError) return;
-        var args = getArgs();
-        if(args.length){
-            self.exec.apply(self, args);
-        }else if(options.default){
-            self.exec(options.default);
-        }
-
-    }, 11);*/
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
