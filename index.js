@@ -10,7 +10,7 @@ git push -u origin master
 function Penumbra(options){
     options = options || {};
     TaskManager.call(this);
-    autoRun(this);
+    autoRun(this, options);
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
@@ -35,7 +35,7 @@ PenumbraFactory.runDefault = function(fn){
 
 module.exports = PenumbraFactory;
 
-function autoRun(pen){
+function autoRun(pen, options){
     setTimeout(function(){
         if(pen.runCount > 0 || pen.execError) return;
         var args = getArgs();
