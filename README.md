@@ -150,6 +150,44 @@ Version 2: `pen.exec` ran without arguments doesn't do anything.
 
 All arguments to `pen.exec` must be strings.
 
+### pen.include(source)
+
+Include another task manager into another.
+
+`source` would be another instance of `penumbra`.
+
+Example:
+
+**other.js**
+
+```javascript
+var pen = require('penumbra')();
+
+pen.task('longlog', function * (){
+    console.log('loooooooooooooooooooooog!');
+});
+
+module.exports = pen;
+```
+
+**tasks.js**
+
+```javascript
+var pen = require('penumbra')(),
+    other = require('./other');
+
+pen.include(other);
+
+pen.task('ready', function * (){
+    console.log('ready to log!');
+});
+pen.task('log', ['ready'], function * (){
+    console.log('log log log every one wants a log!');
+});
+```
+
+You can then use the `longlog` task from tasks.js.
+
 Properties
 ----------
 
