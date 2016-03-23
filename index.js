@@ -25,6 +25,7 @@ function Penumbra(options){
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
+Penumbra.prototype.constructor = Penumbra;
 
 function PenumbraFactory(options){
     return new Penumbra(options);
