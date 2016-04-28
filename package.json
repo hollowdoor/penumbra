@@ -16,6 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "create-coroutine": "^1.0.1",
+    "get-command-args": "^1.0.0",
+    "get-command-flags": "^1.0.0",
     "multimatcher": "^1.0.1"
   },
   "jshintConfig": {
