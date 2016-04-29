@@ -1,5 +1,6 @@
 var TaskManager = require('./lib/taskmanager'),
     cc = require('create-coroutine'),
+    getArgs = require('get-command-args'),
     execute = TaskManager.prototype.exec;
 
 /*
@@ -46,23 +47,5 @@ function autoRun(pen, options){
         }
 
     }, 11);
-}
 
-function getArgs(){
-    var arg = (typeof process === 'object' &&
-                Object.prototype.toString.call(process.argv) === '[object Array]' &&
-                process.argv[2]);
-
-    if(arg){
-        return [arg];
-    }
-
-    if(typeof window !== 'undefined'){
-        var pathArray = window.location.pathname.split( '/' );
-        if(pathArray.length > 0 && pathArray[0].length){
-            return [pathArray[0]];
-        }
-    }
-
-    return [];
 }
