@@ -18,7 +18,8 @@
     "create-coroutine": "^1.0.1",
     "get-command-args": "^1.0.0",
     "get-command-flags": "^1.0.0",
-    "multimatcher": "^1.0.1"
+    "is-equal-regex": "^0.1.0",
+    "multimatcher": "^2.0.0"
   },
   "jshintConfig": {
     "esnext": true
