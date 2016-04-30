@@ -19,6 +19,7 @@
     "get-command-args": "^1.0.0",
     "get-command-flags": "^1.0.0",
     "is-equal-regex": "^0.1.0",
+    "isarray": "^1.0.0",
     "multimatcher": "^2.0.0"
   },
   "jshintConfig": {

@@ -108,6 +108,8 @@ Save that as `log.js` then run it as `node path/to/log.js log`.
 
 The `log` at the end is the task you want to run. If you are unfamiliar with task runners programatic **tasks** are typically like events that listen for an argument on the command line. And sometimes *tasks* are emitted from other *tasks*, or from the program proper.
 
+If you are running `penumbra` in a browser then the first part of the url path is used instead to auto run a task.
+
 ### Manual Run
 
 Add this code to manually programmatically execute a task:
@@ -123,7 +125,7 @@ If you run `exec` yourself then the auto execution won't go. Please go to the [M
 Methods
 -------
 
-### pen.task(name, [dependencies, ...], generator function callback)
+### pen.task(name, [dependencies, ...], generator function callback|string)
 
 Set a task. Dependencies are run first. The task name, and dependencies should be:
 
@@ -131,7 +133,40 @@ Set a task. Dependencies are run first. The task name, and dependencies should b
 -	Glob string
 -	Regular expression
 
+The last argument should be a generator function, or a string.
+
 Look at [create-coroutine](https://www.npmjs.com/package/create-coroutine) to learn more about what is running the task callbacks in `penumbra`.
+
+### pen.task(name, flag(s), [dependencies, ...], generator function callback|string)
+
+Use a command line flag to filter a task.
+
+The flag argument is optional, and must look like a flag. Ex: `--help`, `-h`.
+
+If you passed a flag to a task you can use multiple tasks with the same name. These multiple tasks will only run when the correct flag is in the command line input.
+
+```javascript
+var pen = require('penumbra')();
+
+pen.task('thing', '--main', function * (){
+    console.log('Doing the main thing.');
+});
+pen.task('thing', '--other', function * (){
+    console.log('Doing the other thing.');
+});
+```
+
+If you saved the above in a file named `things.js` running it on the command line as `node thing.js thing --main` will print `Doing the main thing.`.
+
+You can also pass an array of flags. All flags will be required to run the task.
+
+```javascript
+pen.task('thing', ['--one', '--two'], function * (){
+    console.log('Doing the other thing.');
+});
+```
+
+If you are running `penumbra` in the browser then query string parameters are used as flags.
 
 ### pen.exec(name, ..., name) -> Promise instance
 
@@ -199,10 +234,23 @@ Get a nicely formatted string representing all the tasks.
 console.log(pen.tasks);
 ```
 
+Static Properties
+-----------------
+
+### require('penumbra').flags
+
+Get the command line flags, or browser query parameters.
+
+### require('penumbra').args
+
+Get an array of the ordered command line arguments, or the path members of a browser url.
+
 Static Methods
 --------------
 
 ### require('penumbra').runDefault(generator function)
+
+`runDefault` is deprecated so don't use it.
 
 Interesting Effects To Pay Attention To
 ---------------------------------------

@@ -1,6 +1,7 @@
 var TaskManager = require('./lib/taskmanager'),
     cc = require('create-coroutine'),
     getArgs = require('get-command-args'),
+    getFlags = require('get-command-flags'),
     execute = TaskManager.prototype.exec;
 
 /*
@@ -20,6 +21,14 @@ Penumbra.prototype.constructor = Penumbra;
 function PenumbraFactory(options){
     return new Penumbra(options);
 }
+
+Object.defineProperty(PenumbraFactory, 'flags', {
+    get: getFlags
+});
+
+Object.defineProperty(PenumbraFactory, 'args', {
+    get: getArgs
+});
 
 PenumbraFactory.runDefault = function(fn){
     //deprecate this static method.
