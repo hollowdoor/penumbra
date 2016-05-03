@@ -50,11 +50,10 @@ function autoRun(pen, options){
         if(pen.runCount > 0 || pen.execError) return;
         var args = getArgs();
         if(args.length){
-            pen.exec.apply(pen, args);
+            pen.exec.call(pen, args[0]);
         }else if(options.default){
             pen.exec(options.default);
         }
 
     }, 11);
-
 }
