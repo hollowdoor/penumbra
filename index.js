@@ -11,11 +11,13 @@ git push -u origin master
 
 function Penumbra(options){
     options = options || {};
+    this.options = options;
 
     if(typeof options.autoRun !== 'boolean'){
         options.autoRun = true;
     }
     TaskManager.call(this);
+
     if(options.autoRun){
         autoRun(this, options);
     }
@@ -24,6 +26,20 @@ function Penumbra(options){
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
 Penumbra.prototype.constructor = Penumbra;
+Penumbra.prototype.callback = function(){
+    var main = this;
+    return function penumbraCallback(arg1){
+        if(arg1 !== undefined){
+            //Use request object
+            if(typeof arg1 === 'object' && arg1.url === 'string'){
+                a = req.url.match('^[^?]*')[0];
+                a = a.split('/');
+                return runTasks(main, main.options, a.length ? [a[0]] : null);
+            }
+        }
+        runTasks(main, main.options)
+    };
+};
 
 function PenumbraFactory(options){
     return new Penumbra(options);
@@ -39,15 +55,19 @@ Object.defineProperty(PenumbraFactory, 'args', {
 
 module.exports = PenumbraFactory;
 
-function autoRun(pen, options){
+function autoRun(main, options){
     setTimeout(function(){
-        if(pen.runCount > 0 || pen.execError) return;
-        var args = getArgs();
-        if(args.length){
-            pen.exec.call(pen, args[0]);
-        }else if(options.default){
-            pen.exec(options.default);
-        }
-
+        if(main.runCount > 0 || main.execError) return;
+        runTasks(main, options);
     }, 11);
+}
+
+function runTasks(main, options, args){
+    args = args || getArgs().slice(0);
+
+    if(args.length){
+        main.exec.apply(main, args);
+    }else if(options.default){
+        main.exec(options.default);
+    }
 }
