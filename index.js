@@ -11,8 +11,15 @@ git push -u origin master
 
 function Penumbra(options){
     options = options || {};
+
+    if(typeof options.autoRun !== 'boolean'){
+        options.autoRun = true;
+    }
     TaskManager.call(this);
-    autoRun(this, options);
+    if(options.autoRun){
+        autoRun(this, options);
+    }
+
 }
 
 Penumbra.prototype = Object.create(TaskManager.prototype);
