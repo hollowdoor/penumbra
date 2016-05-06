@@ -137,37 +137,6 @@ The last argument should be a generator function, or a string.
 
 Look at [create-coroutine](https://www.npmjs.com/package/create-coroutine) to learn more about what is running the task callbacks in `penumbra`.
 
-### pen.task(name, flag(s), [dependencies, ...], generator function callback|string)
-
-Use a command line flag to filter a task.
-
-The flag argument is optional, and must look like a flag. Ex: `--help`, `-h`.
-
-If you passed a flag to a task you can use multiple tasks with the same name. These multiple tasks will only run when the correct flag is in the command line input.
-
-```javascript
-var pen = require('penumbra')();
-
-pen.task('thing', '--main', function * (){
-    console.log('Doing the main thing.');
-});
-pen.task('thing', '--other', function * (){
-    console.log('Doing the other thing.');
-});
-```
-
-If you saved the above in a file named `things.js` running it on the command line as `node thing.js thing --main` will print `Doing the main thing.`.
-
-You can also pass an array of flags. All flags will be required to run the task.
-
-```javascript
-pen.task('thing', ['--one', '--two'], function * (){
-    console.log('Doing the other thing.');
-});
-```
-
-If you are running `penumbra` in the browser then query string parameters are used as flags.
-
 ### pen.exec(name, ..., name) -> Promise instance
 
 Call `pen.exec` if you want to run a bunch of tasks manually.
@@ -233,17 +202,6 @@ Get a nicely formatted string representing all the tasks.
 ```javascript
 console.log(pen.tasks);
 ```
-
-Static Properties
------------------
-
-### require('penumbra').flags
-
-Get the command line flags, or browser query parameters.
-
-### require('penumbra').args
-
-Get an array of the ordered command line arguments, or the path members of a browser url.
 
 Static Methods
 --------------
