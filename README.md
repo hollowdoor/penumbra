@@ -16,6 +16,8 @@ Build a script then run it with: `node myscript.js taskname`
 
 `npm install --save penumbra@2.2.2`
 
+View **version2docs** on the github repo.
+
 ### globally
 
 `penumbra` is a local package only. To install globally build your script using penumbra, and install your script globally `npm install -g ./my-wonderous-world-conqueror`.
