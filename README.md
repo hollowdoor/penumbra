@@ -16,7 +16,7 @@ Build a script then run it with: `node myscript.js taskname`
 
 `npm install --save penumbra@2.2.2`
 
-View **version2docs** on the github repo.
+View **version2docs**, and the change log on the github repo.
 
 ### globally
 
