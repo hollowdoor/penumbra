@@ -37,19 +37,6 @@ Object.defineProperty(PenumbraFactory, 'args', {
     get: getArgs
 });
 
-PenumbraFactory.runDefault = function(fn){
-    //deprecate this static method.
-    if(!fn) return;
-    if(!hasProcessArg){
-        return cc.run(fn);
-    }else if(typeof window !== 'undefined'){
-        var pathArray = window.location.pathname.split( '/' );
-        if(!pathArray.length){
-            return cc.run(fn);
-        }
-    }
-};
-
 module.exports = PenumbraFactory;
 
 function autoRun(pen, options){
