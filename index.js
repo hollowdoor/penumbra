@@ -28,16 +28,19 @@ Penumbra.prototype = Object.create(TaskManager.prototype);
 Penumbra.prototype.constructor = Penumbra;
 Penumbra.prototype.callback = function(){
     var main = this;
-    return function penumbraCallback(arg1){
+    return function penumbraCallback(arg1, arg2){
+        var ctx = main, args;
         if(arg1 !== undefined){
             //Use request object
-            if(typeof arg1 === 'object' && arg1.url === 'string'){
-                a = req.url.match('^[^?]*')[0];
-                a = a.split('/');
-                return runTasks(main, main.options, a.length ? [a[0]] : null);
+            if(typeof arg1 === 'object'){
+                if(arg1.url === 'string'){
+                    args = req.url.match(/^[^?]*/)[0];
+                    args = args.split('/').slice(0);
+                    ctx = arg2;
+                }
             }
         }
-        runTasks(main, main.options)
+        runTasks(main, main.options, ctx, args.length ? args : null);
     };
 };
 
@@ -62,12 +65,12 @@ function autoRun(main, options){
     }, 11);
 }
 
-function runTasks(main, options, args){
+function runTasks(main, options, ctx, args){
     args = args || getArgs().slice(0);
 
     if(args.length){
-        main.exec.apply(main, args);
+        main.exec.apply(ctx, args);
     }else if(options.default){
-        main.exec(options.default);
+        main.exec.call(ctx, options.default);
     }
 }

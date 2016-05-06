@@ -11,6 +11,7 @@ Only major, or breaking changes will be logged here.
 -	Restructured code for speed, and in preparation for es2015/es2016
 -	New static properties flags, and args added.
 -	Added autoRun constructor option.
+-	Added new callback method.
 
 2.1.1
 -----

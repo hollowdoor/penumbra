@@ -12,81 +12,28 @@ Install
 
 Build a script then run it with: `node myscript.js taskname`
 
+#### Install version 2 (the latest is 3)
+
+`npm install --save penumbra@2.2.2`
+
 ### globally
 
 `penumbra` is a local package only. To install globally build your script using penumbra, and install your script globally `npm install -g ./my-wonderous-world-conqueror`.
 
 And don't forget the first line in your script should be `#!/usr/bin/env node` so your script will work in a Unix environment. Also use `process.cwd()` to get the current working directory any where you run a global script. Easy as pie.
 
-Version 2 differences
----------------------
+Version 3
+---------
 
-Penumbra tasks can now return a value available to dependent tasks as arguments.
+Here are some things you should be aware of when upgrading to penumbra version 3:
 
-`pen.exec` without arguments does nothing. The returned promise resolves to `null`.
+-	No dependency argument in `task` method
+-	Flag argument replaces the dependency argument
+-	Tasks run in parallel
 
-Auto running is more consistent.
+There are other changes that are not that big of a deal.
 
-The `runDefault` static method is deprecated.
-
-There is now an options arguments for the `penumbra` constructor factory function with a default option.
-
-Documentation
--------------
-
-Visit the [penumbra wiki](https://github.com/hollowdoor/penumbra/wiki/Documentation) for more documentation.
-
-Dependency Results
-------------------
-
-`penumbra` version 2 allows you to return a value from a task callback.
-
-Return values are available to tasks that have those other tasks as dependencies.
-
-```javascript
-var penumbra = require('penumbra')();
-
-pen.task('ready', function * (){
-    console.log('ready to log!');
-    return 'Turn it up to ';
-});
-pen.task('super_ready', function * (){
-    return process.argv[3] || 11;
-});
-pen.task('log', ['ready', 'super_ready'], function * (ready, sup){
-    console.log('ok logging!');
-    //ready="Turn it up to "
-    //sup=process.argv[3], or 11
-    console.log(ready + sup + '!');
-});
-```
-
-Saving the script above as `cmdlog.js`. Running it as `node cmdlog log` prints:
-
-```
-ready to log!
-ok logging!
-Turn it up to 11!
-```
-
-Default Task
-------------
-
-Setting a default task gives you max control.
-
-```javascript
-var pen = require('penumbra')({
-        default: 'def'
-    });
-```
-
-...
-
-```javascript
-pen.task('def', function * (){
-    console.log('Running the default task.');
-});
-```
+There might be some documentation bugs. So watch out.
 
 Basic Usage
 -----------
@@ -94,69 +41,109 @@ Basic Usage
 ### Auto Run
 
 ```javascript
-var pen = require('penumbra')();
+var penumbra = require('penumbra'),
+    args = penumbra.args,
+    pen = penumbra();
 
 pen.task('ready', function * (){
     console.log('ready to log!');
+    //Use a command line arg or something else.
+    return arg[1] || 'log log log every one wants a log!';
 });
-pen.task('log', ['ready'], function * (){
-    console.log('log log log every one wants a log!');
+pen.task('log', function * (){
+    //The next line is how you would get a dependency.
+    console.log(yield pen.exec('ready')[0]);
 });
 ```
 
 Save that as `log.js` then run it as `node path/to/log.js log`.
 
-The `log` at the end is the task you want to run. If you are unfamiliar with task runners programatic **tasks** are typically like events that listen for an argument on the command line. And sometimes *tasks* are emitted from other *tasks*, or from the program proper.
+### With a flag
 
-If you are running `penumbra` in a browser then the first part of the url path is used instead to auto run a task.
+You can use command line flags on tasks. Tasks with flags will run instead of tasks without flags that have the same name.
 
-### Manual Run
+Multiple tasks can be defined with different flags.
 
-Add this code to manually programmatically execute a task:
+To use a cmd flag add to your `log.js` file:
 
 ```javascript
-pen.exec('log').then(function(){
-    console.log('all done');
+pen.task('log', '--help', function * (){
+    console.log('Log some stuff. You know you want to.');
 });
 ```
 
-If you run `exec` yourself then the auto execution won't go. Please go to the [Mozilla dev promise docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to learn more about Promises, or if you need a refresher on them.
+Or:
+
+```javascript
+pen.task('log', '--help', 'Log some stuff. You know you want to.');
+```
+
+Constructor
+-----------
+
+### penumbra(options) -> pen
+
+#### options.default
+
+The default is the task you want to run when you haven't passed one to the command line. The default for `default` is `undefined`.
+
+#### options.autoRun
+
+Allow penumbra to run without calling `pen.exec` yourself. The default for `autoRun` is `true`.
 
 Methods
 -------
 
-### pen.task(name, [dependencies, ...], generator function callback|string)
+### pen.task(name, task) -> this
 
-Set a task. Dependencies are run first. The task name, and dependencies should be:
+Define a task.
 
--	JavaScript string
--	Glob string
--	Regular expression
+`name` is the name of the task as a string, glob pattern, regular expression.
 
-The last argument should be a generator function, or a string.
+`task` is a generator function, or string value.
 
-Look at [create-coroutine](https://www.npmjs.com/package/create-coroutine) to learn more about what is running the task callbacks in `penumbra`.
+**Version 3 of penumbra does not have a dependency argument.**
 
-### pen.exec(name, ..., name) -> Promise instance
+### pen.task(name, flag, task) -> this
 
-Call `pen.exec` if you want to run a bunch of tasks manually.
+Define a task that uses a flag. This works the same as a normal task, but a task set this way will use a flag set on the command line.
 
-If you have any tasks set, and they match the strings you pass to `pen.exec` those tasks will be executed.
+Multiple tasks with the same name, but different flag can be set.
 
-If you don't call `pen.exec`:
+`flag` must look like a flag (ex: `--help`, `-h`), and can also be an array of flags of the same format.
 
-1.	the penumbra instance will look in `process.argv[2]` for a task when in node or,
-2.	in the first of `window.location.pathname` if you're using penumbra in a browser.
+When `exec` is run, or your script auto runs penumbra if the flag isn't passed to the command line, or it doesn't match exactly the flag belonging to a task that task will not run. **In other words flags set on a task are required to run a task.**
 
-Version 1: ~~If you use `pen.exec` without arguments it looks for a process object with argv[2] to execute, or the first value of the path in a url if you have `penumbra` in a webpage.~~
+There are no defaults for flags. penumbra only checks if a given flag exists.
 
-Version 2: `pen.exec` ran without arguments doesn't do anything.
+### pen.exec(name, ...) -> promise
 
-All arguments to `pen.exec` must be strings.
+Execute a task, or several tasks in parallel.
 
-### pen.include(source)
+```javascript
+pen.exec('one');
+pen.exec('first', 'second', 'third');
+```
 
-Include another task manager into another.
+**Calling `pen.exec` will prevent task auto running.**
+
+#### promise returned from exec
+
+The returned promise resolves to an array of return values from the tasks ran with `exec`.
+
+Using ES2015:
+
+```javascript
+pen.task('log', function * (){
+    //The next line is how you would get a dependency.
+    let [str] = yield pen.exec('ready');
+    console.log(str);
+});
+```
+
+### pen.include(pen) -> this
+
+Include the tasks from another instance of penumbra.
 
 `source` would be another instance of `penumbra`.
 
@@ -177,7 +164,9 @@ module.exports = pen;
 **tasks.js**
 
 ```javascript
-var pen = require('penumbra')(),
+var penumbra = require('penumbra'),
+    args = penumbra.args,
+    pen = penumbra(),
     other = require('./other');
 
 pen.include(other);
@@ -185,12 +174,19 @@ pen.include(other);
 pen.task('ready', function * (){
     console.log('ready to log!');
 });
-pen.task('log', ['ready'], function * (){
-    console.log('log log log every one wants a log!');
+pen.task('log', function * (){
+    yield pen.exec('ready');
+    console.log(args[1] || 'log log log every one wants a log!');
 });
 ```
 
 You can then use the `longlog` task from tasks.js.
+
+### pen.callback() -> function
+
+Create a callback to be used in some event emitter.
+
+**`pen.callback` is experimental**
 
 Properties
 ----------
@@ -199,49 +195,26 @@ Properties
 
 Get a nicely formatted string representing all the tasks.
 
+Static Properties
+-----------------
+
+### penumbra.args
+
+Get the ordered command line arguments as an array.
+
+In the browser this will the url path parts.
+
+### penumbra.flags
+
+Get command line flags as an object.
+
+In the browser this will be query parameters.
+
+You get what you pass with `penumbra.flags`. There are no defaults.
+
 ```javascript
 console.log(pen.tasks);
 ```
-
-Static Methods
---------------
-
-### require('penumbra').runDefault(generator function)
-
-`runDefault` is deprecated so don't use it.
-
-Interesting Effects To Pay Attention To
----------------------------------------
-
-### Regular Expression Tasks
-
-There is a chance that a regular expression task will run twice, or more if you have it as a dependency.
-
-This happens because `pen.exec` uses a pattern matching algorithm instead of just checking equality.
-
-The regex task can run on it's own when matched then have a chance to run again as a dependent.
-
-In the next example the `/b/` task will run twice because it matches the **b** in **build**.
-
-```javascript
-pen.task('/b/', function * (){ console.log('omg') });
-pen.task('build', [/b/], function * (){ console.log('OMG!') });
-pen.exec('build');
-```
-
-### Globs
-
-As with regular expressions glob string tasks also have a chance of running twice. There is less of a chance, but it can still happen.
-
-The effects of globs, and regular expressions can be used to leverage dependencies if you're careful about how you write them. With great power comes destructive capabilities. ;)
-
-### Auto Running
-
-If you run your `penumbra` script without calling `pen.exec` a task will be chosen from the command line arguments. To do this there is a timer inside the `penumbra` constructor that will delay the internal call to `pen.exec` until all tasks are set.
-
-If you call `pen.exec` inside another asynchronous function the delay of that timer will not be long enough, and you'll get a chance for `pen.exec` to be called twice. This can happen if both the command line input task, and the input to your `pen.exec` method call share the same name pattern.
-
-In fact you could have infinite recursion from `pen.exec` calls inside of a task callback. Just be aware of where your calling `pen.exec`.
 
 The Alteratives
 ---------------
@@ -255,7 +228,7 @@ In many situations you'll want to use npm scripts in package.json. If you want s
 About
 -----
 
-`penumbra` is task agnostic. Use it as a build tool, auto updater, a command line template, or a full program for doing whatever. There's no writing/reading/watch functions, arguments parsing, or anything helpful so get those elsewhere.
+`penumbra` is task agnostic. Use it as a build tool, auto updater, a command line template, or a full program for doing whatever.
 
 Look at [multimatcher](https://www.npmjs.com/package/multimatcher) to find out what kind of names you can use for tasks in `penumbra`. For example you can use these as names:
 
