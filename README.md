@@ -120,6 +120,14 @@ When `exec` is run, or your script auto runs penumbra if the flag isn't passed t
 
 There are no defaults for flags. penumbra only checks if a given flag exists.
 
+### pen.task(flag, task) -> this
+
+Define a task that uses a flag only.
+
+These tasks take precedence over the default task.
+
+If you run a script using penumbra without positional arguments, and flags only these tasks will run.
+
 ### pen.exec(name, ...) -> promise
 
 Execute a task, or several tasks in parallel.
