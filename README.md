@@ -33,9 +33,11 @@ Here are some things you should be aware of when upgrading to penumbra version 3
 -	Flag argument replaces the dependency argument
 -	Tasks run in parallel
 
-There are other changes that are not that big of a deal.
+There are other changes that are not that big of a deal. Behavior is slightly different because of the new `flag` argument.
 
 There might be some documentation bugs. So watch out.
+
+Version 3 is mostly stable, but there could be some bugs too. As long as your aware.
 
 Basic Usage
 -----------

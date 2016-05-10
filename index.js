@@ -61,15 +61,20 @@ module.exports = PenumbraFactory;
 function autoRun(main, options){
     setTimeout(function(){
         if(main.runCount > 0 || main.execError) return;
-        runTasks(main, options);
+        runTasks(main, options, main);
     }, 11);
 }
 
 function runTasks(main, options, ctx, args){
+    var flags = getFlags(), flagCount = 0;
     args = args || getArgs().slice(0);
 
+    for(var n in flags) flagCount++;
+
     if(args.length){
-        main.exec.apply(ctx, args);
+        main.exec.call(ctx, args[0]);
+    }else if(main.hasNameless && flagCount){
+        main.exec.call(ctx);
     }else if(options.default){
         main.exec.call(ctx, options.default);
     }
